@@ -5,7 +5,9 @@
             <StackLayout>
               <Label :text="`${new Date().toLocaleDateString()}`" class="h2" textAlignment="center" />
               <Label :text="prompts" class="p" textWrap="true" />
-              <Button class="photobtn" text="Capture prompt" />
+              <Button class="photobtn" text="Capture prompt" @tap="capturePhoto"/>
+              <Button class="uploadbtn" text="Upload photo" @tap="uploadPhoto"/>
+
 
             </StackLayout>
           </ScrollView>
@@ -25,24 +27,74 @@ import Browse from "./Browse.vue"
 import { ref, onMounted } from 'nativescript-vue'
 import { knownFolders, path, File, ObservableArray, toJSON } from "@nativescript/core";
 import { requestPermissions } from '@nativescript/camera';
+import * as ImagePicker from '@nativescript/imagepicker';
+
+// JavaScript
+const camera = require("@nativescript/camera");
+const { Image } = require("@nativescript/core");
+
+
+const selectedImage = ref(null);
+
 
 
 
 // Get / check camera permissions 
+//  **************************************************************
+// REFERENCE: https://docs.nativescript.org/plugins/camera
+//  **************************************************************
 
-// const perms = await camera.requestPermissions();
+async function capturePhoto(){
+    console.log("Camera permissions");
 
-// if (perms.Success && camera.isAvailable()
-// ) {
-//      // permission request accepted or already granted
-//      // ... call camera.takePicture here ...
-// } else {
-//      // permission request rejected
-//      // ... tell the user ...
-//      const cameraPermissionSuccess = perms.Details.Camera.Success;
-//      const photoPermissionSuccess = perms.Details.Photo.Success
-// }
+  const perms = await camera.requestPermissions();
 
+if (perms.Success && camera.isAvailable()) {
+  console.log("Camera permission granted");
+     // permission request accepted or already granted
+     // ... call camera.takePicture here ...
+} else {
+     // permission request rejected
+     // ... tell the user ...
+     console.log("Camera permission denied");
+     const cameraPermissionSuccess = perms.Details.Camera.Success;
+     const photoPermissionSuccess = perms.Details.Photo.Success
+}
+console.log("end");
+};
+
+//UPLOAD FROM ALBUM 
+async function uploadPhoto(){
+  console.log("LIBRARY permissions");
+
+  const perms = await camera.requestPermissions();
+
+if (perms.Success && camera.isAvailable()) {
+  console.log("Library permission granted");
+
+  const context = ImagePicker.create({
+    mode: 'single' 
+  });
+
+  await context.authorize();
+
+  const selection = await context.present();
+
+
+
+
+     // permission request accepted or already granted
+     // ... call camera.takePicture here ...
+} else {
+     // permission request rejected
+     // ... tell the user ...
+     console.log("Library permission denied");
+     const cameraPermissionSuccess = perms.Details.Camera.Success;
+     const photoPermissionSuccess = perms.Details.Photo.Success
+}
+console.log("end");
+  
+}
 
 console.log("Hello from App.vue");
 const prompts = ref("");
