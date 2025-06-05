@@ -20,7 +20,8 @@ import { requestPermissions } from '@nativescript/camera';
 const camera = require("@nativescript/camera");
 const { Image } = require("@nativescript/core");
 import PromptSelect from "./PromptSelect.vue";
-import { $navigateTo } from 'nativescript-vue'
+import { $navigateTo } from 'nativescript-vue';
+import { API_KEY } from './credentials.js';
 
 const prompts = ref("");
 // check if prompts generated for the day 
@@ -65,7 +66,7 @@ const getPrompts = async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": ""
+        "Authorization": API_KEY
       },
       body: JSON.stringify({
         model: "gpt-4.1", 
@@ -83,10 +84,6 @@ const getPrompts = async () => {
     console.error("API error:", error)
   }
 
-
- 
-    // const parsed = JSON.parse(content);
-    // items = new ObservableArray(parsed);
     const todayEntry = items.find(item => item.day === new Date().toLocaleDateString());
 
     if (todayEntry && todayEntry.promptlist == "") {
@@ -162,8 +159,8 @@ onMounted(() => {
 const promptImage = ref("");
 async function addPhoto(){
 
-  // add a photo to the prompt, upload or take a picture 
- const action = await Dialogs.action({
+    // add a photo to the prompt, upload or take a picture 
+    const action = await Dialogs.action({
         title: "Select an image",
         cancelButtonText: 'Cancel',
         actions: ["Choose from library", "Take a picture"],
@@ -177,23 +174,23 @@ async function addPhoto(){
 
         console.log("LIBRARY permissions");
 
-  const perms = await camera.requestPermissions();
+    const perms = await camera.requestPermissions();
 
-if (perms.Success && camera.isAvailable()) {
-  console.log("Library permission granted");
+    if (perms.Success && camera.isAvailable()) {
+    console.log("Library permission granted");
 
-  const context = ImagePicker.create({
+    const context = ImagePicker.create({
     mode: 'single' 
-  });
+    });
 
-  await context.authorize();
-  const selection = await context.present();
-  // items.photo1 = selection[0].path;
-  console.log("Selected image: ", selection[0].path);
-  const selectedPath = selection[0].path;
-  console.log("Selected path:", selectedPath);
-  fillPrompt(selectedPath);
-  
+    await context.authorize();
+    const selection = await context.present();
+    // items.photo1 = selection[0].path;
+    console.log("Selected image: ", selection[0].path);
+    const selectedPath = selection[0].path;
+    console.log("Selected path:", selectedPath);
+    fillPrompt(selectedPath);
+
 
 }
 
@@ -212,9 +209,12 @@ if (perms.Success && camera.isAvailable()) {
                 const filePath = path.join(documents.path, `${nanoid()}.jpg`);
                 const img = await ImageSource.fromAsset(imageAsset);
                 const saved = img.saveToFile(filePath, "jpg");
+                const selectedPath = "";
 
                 if(saved){
-                    recipeImage.value = filePath;
+                    selectedPath = filePath;
+                    console.log("Image saved to:", selectedPath);
+                    fillPrompt(selectedPath);
                 }else{
                     throw new Error("Failed to save image from camera")
                 }
@@ -238,9 +238,13 @@ if (perms.Success && camera.isAvailable()) {
   margin: 16 0;
 }
 .p {
+  font-family: 'Lucida Sans';
   font-size: 50;
   margin: 30;
   color: black;
+}
+body {
+  background-color: tan;
 }
 
 </style>

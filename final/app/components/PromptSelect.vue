@@ -6,8 +6,8 @@
       <Image :src="props.photopath" stretch="aspectFit" height="300" />
        <!-- <Button class="photobtn" text="Take photo" @tap="capturePhoto"/> -->
         <!-- <Button class="uploadbtn" text="Add photo" @tap="addPhoto"/> -->
+
       <GridLayout columns="*,*,*" rows="auto" class="buttons">
-       
         <Button text="1" col="0" @tap="selectPrompt(1)" />
         <Button text="2" col="1" @tap="selectPrompt(2)" />
         <Button text="3" col="2" @tap="selectPrompt(3)" />
@@ -46,7 +46,6 @@ currImage.value = props.photopath;
 // REFERENCE: https://docs.nativescript.org/plugins/camera
 //  **************************************************************
 const selectedImage = ref(null);
-
 async function selectPrompt(promptNumber){
   console.log("Selected prompt number:", promptNumber);
 
@@ -58,7 +57,6 @@ async function selectPrompt(promptNumber){
       photo2: props.item.photo2,
       photo3: props.item.photo3 
     };
-
 
   if(promptNumber == 1){
     updatedItem.photo1 = props.photopath;

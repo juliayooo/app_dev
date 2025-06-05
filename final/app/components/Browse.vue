@@ -5,10 +5,13 @@
         </ActionBar>
 
         <StackLayout>
+            <Label :text="dayLabel" class="h3"/>
+            <!-- <Label :text="promptLabel" class="p"/> -->
+
             <GridLayout columns="*,*,*" rows="auto" class="buttons">
-                <Image :src="pic1" col="0" stretch="aspectFit" height="300"  />
-                <Image :src="pic2" col="1"stretch="aspectFit" height="300" />
-                <Image :src="pic3" col="2" stretch="aspectFit" height="300"/>
+                <Image :src="pic1" col="0" stretch="aspectFit" height="300" width="100%"  />
+                <Image :src="pic2" col="1"stretch="aspectFit" height="300" width="100%" />
+                <Image :src="pic3" col="2" stretch="aspectFit" height="300"width="100%" />
 
                 </GridLayout>
 
@@ -36,7 +39,9 @@ let items;
 const pic1 = ref("");
 const pic2 = ref("");
 const pic3 = ref("");
-  
+const dayLabel = ref("");
+const promptLabel = ref("");
+
 function handleTabEvent() {
   displayPhotos();
 }
@@ -65,8 +70,11 @@ const file = documents.getFile("data.json");
       }
 
       console.log("pic values:", todayEntry.photo1, todayEntry.photo2, todayEntry.photo3);
-        if(todayEntry.photo1 !== "" || todayEntry.photo2!== "" || todayEntry.photo3!== ""){
-            console.log("Photos already taken for today BROWSE");
+        if(todayEntry.photo1 !== "" && todayEntry.photo2!== "" && todayEntry.photo3!== ""){
+          dayLabel.value = todayEntry.day;
+          promptLabel.value = todayEntry.promptlist;
+          console.log("Browse's prompts:", todayEntry.promptlist);
+          console.log(todayEntry.day);
           pic1.value = todayEntry.photo1;
           pic2.value = todayEntry.photo2;
           pic3.value = todayEntry.photo3;
@@ -92,5 +100,10 @@ const file = documents.getFile("data.json");
     // End custom common variables
 
     // Custom styles
+    h2{
+        font-size: 40px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
 
 </style>
