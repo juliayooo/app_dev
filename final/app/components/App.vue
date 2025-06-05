@@ -1,18 +1,23 @@
 <template>
   <TabView androidTabsPosition="bottom">
     <TabViewItem title="Today">
+      <Frame>
+        <Page>
         <ScrollView>
             <StackLayout>
               <Label :text="`${new Date().toLocaleDateString()}`" class="h2" textAlignment="center" />
               <Label :text="prompts" class="p" textWrap="true" />
-              <Button class="photobtn" text="Capture prompt" @tap="capturePhoto"/>
-              <Button class="uploadbtn" text="Upload photo" @tap="uploadPhoto"/>
-
+              <Button class="fillPrompt" text="Fill Prompt" @tap="fillPrompt"/>
 
             </StackLayout>
+                  
+       
           </ScrollView>
+      </Page>
+        </Frame>
+     
     </TabViewItem>
-
+  
     <TabViewItem title="Collection">
       <Frame>
           <Browse />
@@ -25,76 +30,22 @@
 <script setup>
 import Browse from "./Browse.vue"
 import { ref, onMounted } from 'nativescript-vue'
-import { knownFolders, path, File, ObservableArray, toJSON } from "@nativescript/core";
-import { requestPermissions } from '@nativescript/camera';
-import * as ImagePicker from '@nativescript/imagepicker';
+import { knownFolders, path, File, ObservableArray, toJSON, GridLayout, Frame } from "@nativescript/core";
+import PromptSelect from "./PromptSelect.vue";
+import { $navigateTo } from 'nativescript-vue'
 
-// JavaScript
-const camera = require("@nativescript/camera");
-const { Image } = require("@nativescript/core");
+// const $navigateTo = useNavigate();
 
-
-const selectedImage = ref(null);
-
-
-
-
-// Get / check camera permissions 
-//  **************************************************************
-// REFERENCE: https://docs.nativescript.org/plugins/camera
-//  **************************************************************
-
-async function capturePhoto(){
-    console.log("Camera permissions");
-
-  const perms = await camera.requestPermissions();
-
-if (perms.Success && camera.isAvailable()) {
-  console.log("Camera permission granted");
-     // permission request accepted or already granted
-     // ... call camera.takePicture here ...
-} else {
-     // permission request rejected
-     // ... tell the user ...
-     console.log("Camera permission denied");
-     const cameraPermissionSuccess = perms.Details.Camera.Success;
-     const photoPermissionSuccess = perms.Details.Photo.Success
-}
-console.log("end");
-};
-
-//UPLOAD FROM ALBUM 
-async function uploadPhoto(){
-  console.log("LIBRARY permissions");
-
-  const perms = await camera.requestPermissions();
-
-if (perms.Success && camera.isAvailable()) {
-  console.log("Library permission granted");
-
-  const context = ImagePicker.create({
-    mode: 'single' 
+async function fillPrompt()  {
+  console.log("Filling prompt with photo");
+  $navigateTo(PromptSelect, {
+    // props: {  }
   });
-
-  await context.authorize();
-
-  const selection = await context.present();
-
-
-
-
-     // permission request accepted or already granted
-     // ... call camera.takePicture here ...
-} else {
-     // permission request rejected
-     // ... tell the user ...
-     console.log("Library permission denied");
-     const cameraPermissionSuccess = perms.Details.Camera.Success;
-     const photoPermissionSuccess = perms.Details.Photo.Success
 }
-console.log("end");
-  
-}
+
+
+
+
 
 console.log("Hello from App.vue");
 const prompts = ref("");
@@ -156,6 +107,8 @@ const getPrompts = async () => {
       file.writeTextSync(JSON.stringify(JSONstring));
 
 }
+
+
 onMounted(() => {
 
 
@@ -180,6 +133,8 @@ onMounted(() => {
   // No prompt for today found, fetch one
   getPrompts();
 
+  
+
 })
 
 </script>
@@ -188,16 +143,12 @@ onMounted(() => {
 @import "@nativescript/theme/scss/variables/blue";
 
 .h2 {
-  font-family: 'Courier New';
   font-size: 30;
   margin: 16 0;
 }
 .p {
-  font-family: 'Courier New';
   font-size: 50;
   margin: 30;
 }
-// .photobtn{
-//   width: 100%;
-// }
+
 </style>

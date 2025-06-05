@@ -53,4 +53,33 @@ const props = defineProps(['item']);
 // End custom common variables
 
 // Custom styles
+.recipe-image {
+   animation-name: expand;
+   animation-duration: 0.5s;
+   animation-timing-function: ease-out;
+}
+@keyframes expand{
+    from{
+        transform: scale(0, 0);
+    }
+    to{
+        transform: scale(1, 1);
+    }
+}
+.recipe-content {
+    animation-name: slide-down;
+   animation-duration: 0.6s;
+   animation-timing-function: ease-in-out;
+}
+
+@keyframes slide-down{
+    from{
+        transform: translateY(-40%);
+        opacity: 0;
+    }
+    to{
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
 </style>
