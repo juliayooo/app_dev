@@ -1,5 +1,7 @@
 <template>
   <Page>
+    <ActionBar>
+            <Label text="Fill Prompt"></Label></ActionBar>
     <StackLayout>
       <!-- <Image :src="photo" stretch="aspectFit" height="300" /> -->
       <Label text="Which prompt does this photo match?" class="h2" textAlignment="center" />
@@ -8,9 +10,9 @@
         <!-- <Button class="uploadbtn" text="Add photo" @tap="addPhoto"/> -->
 
       <GridLayout columns="*,*,*" rows="auto" class="buttons">
-        <Button text="1" col="0" @tap="selectPrompt(1)" />
-        <Button text="2" col="1" @tap="selectPrompt(2)" />
-        <Button text="3" col="2" @tap="selectPrompt(3)" />
+        <Button class="pbutt" text="1" col="0" @tap="selectPrompt(1)" />
+        <Button class="pbutt"text="2" col="1" @tap="selectPrompt(2)" />
+        <Button class="pbutt"text="3" col="2" @tap="selectPrompt(3)" />
       </GridLayout>
     </StackLayout>
   </Page>
@@ -41,10 +43,6 @@ console.log("Photo path: ", props.photopath);
 currImage.value = props.photopath;
 
 
-// Get / check camera permissions 
-//  **************************************************************
-// REFERENCE: https://docs.nativescript.org/plugins/camera
-//  **************************************************************
 const selectedImage = ref(null);
 async function selectPrompt(promptNumber){
   console.log("Selected prompt number:", promptNumber);
@@ -65,12 +63,12 @@ async function selectPrompt(promptNumber){
     // displayPhotos();
     //convert to json string
   } else if(promptNumber == 2){
-    updatedItem.photo1 = props.photopath;
+    updatedItem.photo2 = props.photopath;
 
     props.item.photo2 = props.photopath;
 
   } else if(promptNumber == 3){
-    updatedItem.photo1 = props.photopath;
+    updatedItem.photo3 = props.photopath;
 
     props.item.photo3 = props.photopath;
 
@@ -80,7 +78,7 @@ async function selectPrompt(promptNumber){
     const file = documents.getFile("data.json");
      const content = file.readTextSync();
 
-const JSONstring = JSON.stringify(updatedItem);
+      const JSONstring = JSON.stringify(updatedItem);
       console.log("JSON string:", JSONstring);
       // wrote string 
       console.log(JSONstring);
@@ -221,6 +219,18 @@ const JSONstring = JSON.stringify(updatedItem);
 // }
 
 </script>
+
+
+<style>
+.pbutt{
+  width: 100px;
+  background-color: rgb(148, 172, 231);
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  margin-top: 100px;
+}
+</style>
 <!-- 
 <style scoped>
 .photobtn {

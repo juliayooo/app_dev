@@ -1,10 +1,13 @@
 <template>
             <Page>
+              <ActionBar>
+            <Label text="Today"></Label></ActionBar>
+
               <StackLayout>
                
               <Label :text="`${new Date().toLocaleDateString()}`" class="h2" textAlignment="center" />
               <Label :text="prompts" class="p" textWrap="true" />
-              <Button class="fillPrompt" text="Add Photo" @tap="addPhoto"/>
+              <Button class="fillPrompt" text="Add Photo" @tap="addPhoto" width = "300"/>
               </StackLayout>
             </Page>
 
@@ -12,7 +15,7 @@
 
 
 <script setup>
-import { ref, onMounted } from 'nativescript-vue'
+import { ref, onMounted, ActionBar } from 'nativescript-vue'
 import { knownFolders, path, File, ObservableArray, StackLayout } from "@nativescript/core";
 import { Dialogs, ImageSource } from '@nativescript/core';
 import * as ImagePicker from '@nativescript/imagepicker';
@@ -93,23 +96,41 @@ const getPrompts = async () => {
     }
     else{
         console.log("No entry for today, creating new one");
-        items = new ObservableArray([
-        {
-            day: new Date().toLocaleDateString(),
-            promptlist: prompts.value,
-            photo1: "",
-            photo2: "",
-            photo3: "",
-        }
-    ])
-    //convert to json string
-      const JSONstring = items.toJSON();
+
+      const updatedItem = {
+      day : new Date().toLocaleDateString(),
+      promptlist: prompts.value,
+      photo1: "",
+      photo2: "",
+      photo3: ""
+    };
+     const file = documents.getFile("data.json");
+     const content = file.readTextSync();
+
+      const JSONstring = JSON.stringify(updatedItem);
+      console.log("JSON string:", JSONstring);
       // wrote string 
       console.log(JSONstring);
+       try {
+            const parsed = JSON.parse(content); // parsed is an array
 
-      // write to file
-      const file = documents.getFile("data.json");
-      file.writeTextSync(JSON.stringify(JSONstring));
+            // Find and update the correct day entry
+            const todayIndex = parsed.findIndex(i => i.day === updatedItem.day);
+            console.log("Today index:", todayIndex);
+            if (todayIndex !== -1) {
+              parsed[todayIndex] = updatedItem;
+
+              // Write back to file
+              file.writeTextSync(JSON.stringify(parsed));
+              console.log("Successfully saved updated entry.", updatedItem);
+            } else {
+              console.warn("Entry not found for today's date.");
+            }
+          } catch (e) {
+            console.error("Failed to update JSON file", e);
+          }
+
+
     }
     ;
 
@@ -129,7 +150,8 @@ onMounted(() => {
     const content = file.readTextSync();
     try {
       const parsed = JSON.parse(content);
-      items = new ObservableArray(parsed);
+      items = parsed;
+      console.log("Items loaded from data.json:", items);
       const todayEntry = items.find(item => item.day === new Date().toLocaleDateString());
       if (todayEntry && todayEntry.promptlist !== "") {
         console.log("Today's prompts already exist:", todayEntry.promptlist);
@@ -142,7 +164,7 @@ onMounted(() => {
     }
     const todayEntry = items.find(item => item.day === new Date().toLocaleDateString());
 
-     if(todayEntry.photo1!== "" && todayEntry.photo2 !== ""&& todayEntry.photo3!== ""){
+     if(todayEntry &&todayEntry.photo1!== "" && todayEntry.photo2 !== ""&& todayEntry.photo3!== ""){
           console.log("Photos already added for today");
         return;
       }
@@ -236,9 +258,12 @@ async function addPhoto(){
 .h2 {
   font-size: 30;
   margin: 16 0;
+  font-weight: bold;
+    font-family: 'Monospace';
+
 }
 .p {
-  font-family: 'Lucida Sans';
+  font-family: 'Monospace';
   font-size: 50;
   margin: 30;
   color: black;
@@ -246,5 +271,17 @@ async function addPhoto(){
 body {
   background-color: tan;
 }
+.fillPrompt {
+  background-color: rgb(148, 172, 231);
+  border-radius: 50%;
+  margin: 20;
+  width: 300;
+  font-size: 20;
+  color: white;
+    font-family: 'Monospace';
+
+    font-weight: bold;
+}
+
 
 </style>
