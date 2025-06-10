@@ -88,7 +88,7 @@ async function selectPrompt(promptNumber){
             // Find and update the correct day entry
             const todayIndex = parsed.findIndex(i => i.day === updatedItem.day);
             console.log("Today index:", todayIndex);
-            if (todayIndex !== -1) {
+            if (parsed[todayIndex]) {
               parsed[todayIndex] = updatedItem;
 
               // Write back to file

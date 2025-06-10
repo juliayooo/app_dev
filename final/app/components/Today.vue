@@ -36,9 +36,14 @@ let items;
 async function fillPrompt(photoPath)  {
 
   const today = new Date().toLocaleDateString();
-  const todayItem = items.find(item => item.day === today);
+  const file = documents.getFile("data.json");
+  const content = file.readTextSync();
+  const parsed = JSON.parse(content); // parsed is an array
+  const todayIdx = parsed.findIndex(i => i.day === today);
+  const todayItem = parsed[todayIdx];
+  console.log("Today index:", todayIdx);
   console.log("photopath:", photoPath);
-  if (!todayItem) {
+  if (todayIdx === -1) {
     console.error("No prompt found for today.");
     return;
   }
@@ -86,11 +91,28 @@ const getPrompts = async () => {
   } catch (error) {
     console.error("API error:", error)
   }
-
-    const todayEntry = items.find(item => item.day === new Date().toLocaleDateString());
-
+  const file = documents.getFile("data.json");
+     const content = file.readTextSync();
+     const parsed = JSON.parse(content); // parsed is an array
+    const todayIdx = parsed.findIndex(i => i.day === new Date().toLocaleDateString());
+    console.log(new Date().toLocaleDateString());
+    console.log("Today index:", todayIdx);
+    const todayEntry = parsed[todayIdx];
+    console.log("Today's entry:", todayEntry);
     if (todayEntry && todayEntry.promptlist == "") {
-        todayEntry.promptlist = prompts.value;
+      const updatedItem = {
+      day : new Date().toLocaleDateString(),
+      promptlist: prompts.value,
+      photo1: "",
+      photo2: "",
+      photo3: ""
+    };
+    const file = documents.getFile("data.json");
+     const content = file.readTextSync();
+
+      const JSONstring = JSON.stringify(updatedItem);
+    
+
         console.log("Updated today's prompts:", todayEntry.promptlist);
       return;
     }
@@ -108,14 +130,15 @@ const getPrompts = async () => {
      const content = file.readTextSync();
 
       const JSONstring = JSON.stringify(updatedItem);
-      console.log("JSON string:", JSONstring);
+      parsed.push(updatedItem); // add new entry if not found
       // wrote string 
       console.log(JSONstring);
        try {
-            const parsed = JSON.parse(content); // parsed is an array
+            // const parsed = JSON.parse(content); // parsed is an array
+    const todayIndex = parsed.findIndex(i => i.day === new Date().toLocaleDateString());
 
             // Find and update the correct day entry
-            const todayIndex = parsed.findIndex(i => i.day === updatedItem.day);
+            // const todayIndex = parsed.findIndex(i => i.day === updatedItem.day);
             console.log("Today index:", todayIndex);
             if (todayIndex !== -1) {
               parsed[todayIndex] = updatedItem;
@@ -124,6 +147,8 @@ const getPrompts = async () => {
               file.writeTextSync(JSON.stringify(parsed));
               console.log("Successfully saved updated entry.", updatedItem);
             } else {
+                parsed.push(updatedItem);  // add new entry if not found
+              file.writeTextSync(JSON.stringify(parsed));
               console.warn("Entry not found for today's date.");
             }
           } catch (e) {
